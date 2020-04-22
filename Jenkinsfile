@@ -122,29 +122,8 @@ node {
    
         }
 
-        stage("Queue deploy") {
-                
-            echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
-
-            acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
-                resourceGroupName: 'mscdevops-aks-rg',
-                containerService: 'mscdevops-aks | AKS',
-                sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
-                configFilePaths: '**/frontend/*.yaml',
-                enableConfigSubstitution: true,
-
-            // Kubernetes
-            secretName: 'mscdevops',
-            secretNamespace: 'default',
-
-            // Docker Swarm
-            swarmRemoveContainersFirst: true,
-
-            // DC/OS Marathon
-            //dcosDockerCredentialsPath: '<dcos-credentials-path>',
-
-            containerRegistryCredentials: [
-                [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
+        stage('Setup services'){
+            sh "bash aks/setup/setup_dns.sh"
         }
 
         stage('Check Env') {
@@ -179,6 +158,31 @@ node {
             sh """
                 kubectl --kubeconfig=kubeconfig delete deployment "fe-service-${currentEnvironment}"
             """
+        }
+
+        stage("Queue deploy") {
+                
+            echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
+
+            acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
+                resourceGroupName: 'mscdevops-aks-rg',
+                containerService: 'mscdevops-aks | AKS',
+                sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
+                configFilePaths: '**/frontend/*.yaml',
+                enableConfigSubstitution: true,
+
+            // Kubernetes
+            secretName: 'mscdevops',
+            secretNamespace: 'default',
+
+            // Docker Swarm
+            swarmRemoveContainersFirst: true,
+
+            // DC/OS Marathon
+            //dcosDockerCredentialsPath: '<dcos-credentials-path>',
+
+            containerRegistryCredentials: [
+                [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
         }
 
         def verifyEnvironment = { service ->
