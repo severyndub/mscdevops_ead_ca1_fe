@@ -13,7 +13,7 @@
     def newEnvironment = { ->
         currentEnvironment == 'blue' ? 'green' : 'blue'
     }
-    boolean setupDns = env.SETUP_DNS?.trim()
+    boolean setupDns = false
 
 node {
 
@@ -28,7 +28,8 @@ node {
         deploymentType = params.TARGET_ROLE?.trim()
         clearImages = params.CLEAR_IMAGES
         cleanAks = params.CLEAN_AKS
-        env.TARGET_ROLE =  currentEnvironment  
+        env.TARGET_ROLE =  currentEnvironment
+        setupDns = params.SETUP_DNS?.trim()
 
         // Check if the build label is set
         if (buildImages) {
@@ -70,6 +71,7 @@ node {
             TARGET_ROLE: '$env.TARGET_ROLE'
             overrideVersion: '${overrideVersion}'
             TARGET PORT: '${env.TARGET_PORT}'
+            setupDns: '${setupDns}'
         """
 
         if(cleanAks) {
