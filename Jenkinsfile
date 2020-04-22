@@ -236,7 +236,6 @@ node {
                 echo "Removing images with tag '${env.BUILD_LABEL}'"
                 sh "docker images ${env.BUILD_LABEL}"
                 sh "docker rmi -f \$(docker images | grep '${env.BUILD_LABEL}' | awk '{print \$3}')"
-                sh "az logout"
             }
         }
         // Recursively delete the current directory from the workspace
