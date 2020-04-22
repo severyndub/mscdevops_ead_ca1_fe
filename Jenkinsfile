@@ -12,6 +12,7 @@
     def currentEnvironment = 'blue'
     def newEnvironment = { ->
         currentEnvironment == 'blue' ? 'green' : 'blue'
+    }
 
 node {
 
