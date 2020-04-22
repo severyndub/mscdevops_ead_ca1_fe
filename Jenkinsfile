@@ -18,7 +18,6 @@ node {
 
     properties([disableConcurrentBuilds()])
 
-    //test
 
     try {
 
