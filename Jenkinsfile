@@ -43,8 +43,6 @@ node {
             override = true
         }
 
-        //env.BUILD_LABEL = env.BUILD_LABEL + ':' + env.BUILD_VERSION
-
         switch(branch){
             case 'development':
                 //env.TARGET_ROLE = 'blue'
