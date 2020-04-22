@@ -195,7 +195,7 @@ node {
 
         stage('Verify Staged') {
             // verify the deployment through the corresponding test endpoint
-            verifyEnvironment("svc-fe-service-${newEnvironment()}")
+            verifyEnvironment("svc-test-fe-service-${newEnvironment()}")
         }
     
         stage('Switch') {
