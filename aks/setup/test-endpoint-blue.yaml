@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-test-fe-service-blue
+  labels:
+    app: fe-service
+    role: test-blue
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 22137
+  selector:
+    app: fe-service
+    role: blue
+
+
+
+
