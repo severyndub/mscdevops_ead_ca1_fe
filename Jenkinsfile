@@ -155,9 +155,9 @@ node {
             env.TARGET_ROLE = newEnvironment()
 
             // clean the inactive environment
-            sh """
-                kubectl --kubeconfig=kubeconfig delete deployment "fe-service-\$TARGET_ROLE"
-            """
+            // sh """
+            //     kubectl --kubeconfig=kubeconfig delete deployment "fe-service-\$TARGET_ROLE"
+            // """
         }
 
         stage("Queue deploy") {
