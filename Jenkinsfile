@@ -177,7 +177,7 @@ node {
 
             // clean the inactive environment
             sh """
-                kubectl --kubeconfig=kubeconfig delete deployment "fe-service-${currentEnvironment}"
+                kubectl --kubeconfig=kubeconfig delete deployment "svc-fe-service-${currentEnvironment}"
             """
         }
 
