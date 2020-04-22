@@ -143,7 +143,7 @@ node {
                     az account set -s $AZURE_SUBSCRIPTION_ID
                     az aks get-credentials --overwrite-existing --resource-group mscdevops-aks-rg --name mscdevops-aks --admin --file kubeconfig
                     az logout
-                    current_role="\$(kubectl --kubeconfig kubeconfig get services svc-fe-service --output json | jq -r .spec.selector.role)"
+                    current_role="\$(kubectl --kubeconfig kubeconfig get services svc-fe-service --output json | jq -r .spec.selector.deployment)"
                     if [ "\$current_role" = null ]; then
                       echo "Unable to determine current environment"
                       exit 1
