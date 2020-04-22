@@ -123,7 +123,7 @@ node {
         }
 
         stage('Setup services'){
-            sh "bash aks/setup/setup_dns.sh"
+            //sh "bash aks/setup/setup_dns.sh"
         }
 
         stage('Check Env') {
