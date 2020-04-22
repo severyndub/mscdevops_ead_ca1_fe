@@ -126,25 +126,6 @@ node {
             //sh "bash aks/setup/setup_dns.sh"
         }
 
-        stage("Queue deploy") {
-                
-            echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
-
-            acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
-                resourceGroupName: 'mscdevops-aks-rg',
-                containerService: 'mscdevops-aks | AKS',
-                sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
-                configFilePaths: '**/frontend/*.yaml',
-                enableConfigSubstitution: true,
-
-            // Kubernetes
-            secretName: 'mscdevops',
-            secretNamespace: 'default',
-
-            containerRegistryCredentials: [
-                [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
-        }
-
         stage('Check Env') {
         // check the current active environment to determine the inactive one that will be deployed to
 
@@ -177,6 +158,25 @@ node {
             // sh """
             //     kubectl --kubeconfig=kubeconfig delete deployment "fe-service-\$TARGET_ROLE"
             // """
+        }
+
+        stage("Queue deploy") {
+                
+            echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
+
+            acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
+                resourceGroupName: 'mscdevops-aks-rg',
+                containerService: 'mscdevops-aks | AKS',
+                sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
+                configFilePaths: '**/frontend/*.yaml',
+                enableConfigSubstitution: true,
+
+            // Kubernetes
+            secretName: 'mscdevops',
+            secretNamespace: 'default',
+
+            containerRegistryCredentials: [
+                [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
         }
 
         def verifyEnvironment = { service ->
