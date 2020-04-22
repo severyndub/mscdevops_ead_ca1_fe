@@ -1,7 +1,5 @@
 #!groovy
 
-properties([pipelineTriggers([githubPush()])])
-
     boolean buildImages = false
     def targetEnv = ""
     def deploymentType = ""
