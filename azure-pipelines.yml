@@ -1,0 +1,50 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '7fb8e137-cf36-47e9-a0de-a49cfd5ced2c'
+  imageRepository: 'nodejs-server'
+  containerRegistry: 'knolanacr.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '1.$(Build.BuildId)'
+  
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+              $(tag)
+    - task: CmdLine@2
+      displayName: Change Build Version Tag
+      inputs:
+        script: 'sed -i ''s/nodejs-server:latest/$(imageRepository):$(tag)/g'' create-nodejs-service-manifest.yaml'
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Artifact for Release
+      inputs:
+        targetPath: 'create-nodejs-service-manifest.yaml'
+        artifact: 'YAML'
+        publishLocation: 'pipeline'

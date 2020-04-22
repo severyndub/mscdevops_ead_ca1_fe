@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # deployment name
+  name: node-deployment
+  labels:
+    app: node
+spec:
+  # modify replicas according to your case
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: node
+  # pod template
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      # pod contains 1 container
+      containers:
+      - name: node
+        image: knolanacr.azurecr.io/nodejs-server:latest 
+        # container opens port 22137
+        ports:
+        - containerPort: 22137
+          name: http
+          protocol: TCP            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # The unique Service instance/name
+  name: node-service
+spec:
+  # Add external load balancer
+  # *Only supported by some cloud providers*
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 22137
+      targetPort: 22137
+  selector:
+    # Loadbalance traffic across Pods matching
+    # this label selector
+    app: node

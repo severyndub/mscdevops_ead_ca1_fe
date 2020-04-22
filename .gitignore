@@ -1,0 +1,3 @@
+# prevent your local modules and debug logs from being copied onto your git repo
+node_modules
+npm-debug.log
