@@ -228,12 +228,6 @@ node {
             verifyEnvironment('svc-fe-service')
         }
 
-
-        stage("Get container public ip"){
-            //sh "kubectl describe services svc-fe-service-${env.TARGET_ROLE} | grep 'LoadBalancer Ingress:' | awk '{printf \"%s\\n\", \$3}'"
-            sh "kubectl get service svc-fe-service-${env.TARGET_ROLE} | awk '{printf \"%s\\n\", \$4}'"
-        }
-
     } catch (e) {
         throw e
     } finally {
