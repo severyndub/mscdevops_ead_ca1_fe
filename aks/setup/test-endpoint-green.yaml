@@ -5,7 +5,7 @@ metadata:
   name: svc-test-fe-service-green
 spec:
   type: LoadBalancer
-    selector:
+  selector:
     app: fe-service
     deployment: green
   ports:

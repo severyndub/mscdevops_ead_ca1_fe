@@ -5,7 +5,7 @@ metadata:
   name: svc-test-fe-service-blue
 spec:
   type: LoadBalancer
-    selector:
+  selector:
     app: fe-service
     deployment: blue
   ports:

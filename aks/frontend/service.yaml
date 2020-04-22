@@ -5,7 +5,7 @@ metadata:
   name: svc-fe-service-${TARGET_ROLE}
 spec:
   type: LoadBalancer
-    selector:
+  selector:
     app: fe-service
     deployment: ${TARGET_ROLE}
   ports:
