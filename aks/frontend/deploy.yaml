@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe-service-${TARGET_ROLE}
+  labels:
+    app: fe-service
+    deployment: ${TARGET_ROLE}
+spec:
+  replicas: ${REPLICAS_NO}
+  selector:
+    matchLabels:
+      app: fe-service
+      deployment: ${TARGET_ROLE}
+  template:
+    metadata:
+      labels:
+        app: fe-service
+        deployment: ${TARGET_ROLE}
+    spec:
+      containers:
+      - name: fe-service
+        image: mcsdevopsentarch.azurecr.io/bp-service:${BUILD_VERSION}
+        resources:
+          requests:
+            cpu: 500m
+            memory: 128Mi
+          limits:
+            cpu: 1000m
+            memory: 256Mi
+        ports:
+        - containerPort: 4000
+          name: http
+          protocol: TCP
+      imagePullSecrets:
+      - name: myseckey

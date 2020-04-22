@@ -96,31 +96,19 @@ node {
             }
 
         if(!cleanAks && !override){
-            stage('Checkout frontend service') {
-                dir('feservice') {
-                    git "${env.SERVICE_URL}"
-                }
-            }
 
             //This will use the content of the package.json file and install any needed dependencies into /node-modules folder
             stage("Install npm dependencies") {
-                dir('feservice') {
-                    sh "npm install"
-                    echo "List audit vulnerabilities:"
-                    //sh "npm audit"
-                }
-
+                sh "npm install"
                 echo "dependencies install completed"
             }
             
             if (buildImages) {
                 stage("Build Images") {
-                    dir('feservice') {
-                        echo "setting version: BUILD_LABEL='${env.BUILD_LABEL}'; COMMIT_HASH='${env.COMMIT_HASH}'"
-                        sh "docker build -t '${env.BUILD_LABEL}:${env.BUILD_VERSION}' ."
-                        echo "Docker containers built with tag '${env.BUILD_LABEL}:${env.BUILD_VERSION}'"
-                        sh "docker images ${env.BUILD_LABEL}:${env.BUILD_VERSION}"
-                    }
+                    echo "setting version: BUILD_LABEL='${env.BUILD_LABEL}'; COMMIT_HASH='${env.COMMIT_HASH}'"
+                    sh "docker build -t '${env.BUILD_LABEL}:${env.BUILD_VERSION}' ."
+                    echo "Docker containers built with tag '${env.BUILD_LABEL}:${env.BUILD_VERSION}'"
+                    sh "docker images ${env.BUILD_LABEL}:${env.BUILD_VERSION}"
                 }
                 
                 stage("Push Images") {
@@ -134,27 +122,27 @@ node {
 
         stage("Queue deploy") {
                 
-                    echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
+            echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
 
-                    acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
-                        resourceGroupName: 'mscdevops-aks-rg',
-                        containerService: 'mscdevops-aks | AKS',
-                        sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
-                        configFilePaths: '**/frontend/*.yaml',
-                        enableConfigSubstitution: true,
+            acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
+                resourceGroupName: 'mscdevops-aks-rg',
+                containerService: 'mscdevops-aks | AKS',
+                sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
+                configFilePaths: '**/frontend/*.yaml',
+                enableConfigSubstitution: true,
 
-                    // Kubernetes
-                    secretName: 'mscdevops',
-                    secretNamespace: 'default',
+            // Kubernetes
+            secretName: 'mscdevops',
+            secretNamespace: 'default',
 
-                    // Docker Swarm
-                    swarmRemoveContainersFirst: true,
+            // Docker Swarm
+            swarmRemoveContainersFirst: true,
 
-                    // DC/OS Marathon
-                    //dcosDockerCredentialsPath: '<dcos-credentials-path>',
+            // DC/OS Marathon
+            //dcosDockerCredentialsPath: '<dcos-credentials-path>',
 
-                    containerRegistryCredentials: [
-                        [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
+            containerRegistryCredentials: [
+                [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
         }
 
         stage("Get container public ip"){
