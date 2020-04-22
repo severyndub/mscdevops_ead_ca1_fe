@@ -29,7 +29,7 @@ node {
         clearImages = params.CLEAR_IMAGES
         cleanAks = params.CLEAN_AKS
         env.TARGET_ROLE =  currentEnvironment
-        setupDns = params.SETUP_DNS?.trim()
+        setupDns = params.SETUP_DNS
 
         // Check if the build label is set
         if (buildImages) {
