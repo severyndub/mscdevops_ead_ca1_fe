@@ -153,11 +153,6 @@ node {
             currentBuild.displayName = newEnvironment().toUpperCase() + ' ' + "${env.BUILD_LABEL}:${env.BUILD_VERSION}"
 
             env.TARGET_ROLE = newEnvironment()
-
-            // clean the inactive environment
-            // sh """
-            //     kubectl --kubeconfig=kubeconfig delete deployment "fe-service-\$TARGET_ROLE"
-            // """
         }
 
         stage("Queue deploy") {
