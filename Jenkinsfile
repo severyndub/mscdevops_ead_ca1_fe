@@ -177,7 +177,7 @@ node {
 
             // clean the inactive environment
             sh """
-                kubectl --kubeconfig=kubeconfig delete deployment "svc-fe-service-${currentEnvironment}"
+                kubectl --kubeconfig=kubeconfig delete deployment "fe-service-${currentEnvironment}"
             """
         }
 
@@ -190,7 +190,7 @@ node {
                   if curl -m 10 "http://\$endpoint_ip"; then
                       break;
                   fi
-                  if [ "\$count" -gt 30 ]; then
+                  if [ "\$count" -gt 5 ]; then
                       echo 'Timeout while waiting for the ${service} endpoint to be ready'
                       exit 1
                   fi
