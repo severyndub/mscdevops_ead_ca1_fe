@@ -129,6 +129,7 @@ node {
                     az account set -s $AZURE_SUBSCRIPTION_ID
                     az aks get-credentials --overwrite-existing --resource-group mscdevops-aks-rg --name mscdevops-aks --admin --file kubeconfig
                     bash aks/setup/setup_dns.sh
+                    az logout
                 """
             }
         }
@@ -142,13 +143,13 @@ node {
                     az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
                     az account set -s $AZURE_SUBSCRIPTION_ID
                     az aks get-credentials --overwrite-existing --resource-group mscdevops-aks-rg --name mscdevops-aks --admin --file kubeconfig
-                    az logout
                     current_role="\$(kubectl --kubeconfig kubeconfig get services svc-fe-service --output json | jq -r .spec.selector.deployment)"
                     if [ "\$current_role" = null ]; then
                       echo "Unable to determine current environment"
                       exit 1
                     fi
                     echo "\$current_role" >current-environment
+                    az logout
                 """
             }
 
@@ -166,11 +167,11 @@ node {
                 
             echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
 
-            acsDeploy(azureCredentialsId: '72555f61-7a9f-4145-8bb7-a163f107bccf',
+            acsDeploy(azureCredentialsId: servicePrincipalId,
                 resourceGroupName: 'mscdevops-aks-rg',
                 containerService: 'mscdevops-aks | AKS',
                 sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
-                configFilePaths: '**/frontend/*.yaml',
+                configFilePaths: '**/frontend/deploy.yaml',
                 enableConfigSubstitution: true,
 
             // Kubernetes
@@ -210,8 +211,9 @@ node {
             // With enableConfigSubstitution set to true, the variables ${TARGET_ROLE}
             // will be replaced with environment variable values
             acsDeploy azureCredentialsId: servicePrincipalId,
-                      resourceGroupName: resourceGroup,
+                      resourceGroupName: 'mscdevops-aks-rg',
                       containerService: "mscdevops-aks | AKS",
+                      sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
                       configFilePaths: '**/frontend/service.yml',
                       enableConfigSubstitution: true
         }
@@ -235,6 +237,7 @@ node {
                 echo "Removing images with tag '${env.BUILD_LABEL}'"
                 sh "docker images ${env.BUILD_LABEL}"
                 sh "docker rmi -f \$(docker images | grep '${env.BUILD_LABEL}' | awk '{print \$3}')"
+                sh "az logout"
             }
         }
         // Recursively delete the current directory from the workspace

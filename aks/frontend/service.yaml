@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: svc-fe-service-${TARGET_ROLE}
+  name: svc-fe-service
 spec:
   type: LoadBalancer
   selector:
