@@ -28,7 +28,8 @@ node {
         targetEnv = params.TARGET_ENV?.trim()
         deploymentType = params.TARGET_ROLE?.trim()
         clearImages = params.CLEAR_IMAGES
-        cleanAks = params.CLEAN_AKS        
+        cleanAks = params.CLEAN_AKS
+        env.TARGET_ROLE =  newEnvironment  
 
         // Check if the build label is set
         if (buildImages) {
