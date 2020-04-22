@@ -168,7 +168,7 @@ node {
                 resourceGroupName: 'mscdevops-aks-rg',
                 containerService: 'mscdevops-aks | AKS',
                 sshCredentialsId: '491fabd9-2952-4e79-9192-66b52c9dd389',
-                configFilePaths: '**/frontend/*.yaml',
+                configFilePaths: '**/frontend/deploy.yaml',
                 enableConfigSubstitution: true,
 
             // Kubernetes
