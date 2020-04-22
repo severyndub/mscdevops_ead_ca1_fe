@@ -176,7 +176,7 @@ node {
 
         def verifyEnvironment = { service ->
             sh """
-              endpoint_ip="\$(kubectl --kubeconfig=kubeconfig get services '${service}' --output json | jq -r '.status.loadBalancer.ingress[0].ip')"
+              endpoint_ip="\$(kubectl get services '${service}' --output json | jq -r '.status.loadBalancer.ingress[0].ip')"
               count=0
               while true; do
                   count=\$(expr \$count + 1)
