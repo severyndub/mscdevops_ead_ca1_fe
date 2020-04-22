@@ -3,16 +3,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: svc-test-fe-service-green
-  labels:
-    app: fe-service
-    role: test-green
 spec:
   type: LoadBalancer
+    selector:
+    app: fe-service
+    deployment: green
   ports:
     - name: http
       port: 80
       protocol: TCP
       targetPort: 22137
-  selector:
-    app: fe-service
-    role: green

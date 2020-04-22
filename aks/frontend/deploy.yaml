@@ -34,3 +34,8 @@ spec:
           protocol: TCP
       imagePullSecrets:
       - name: myseckey
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1

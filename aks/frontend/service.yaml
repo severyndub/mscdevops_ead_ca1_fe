@@ -5,14 +5,15 @@ metadata:
   name: svc-fe-service-${TARGET_ROLE}
 spec:
   type: LoadBalancer
+    selector:
+    app: fe-service
+    deployment: ${TARGET_ROLE}
   ports:
     - name: http
       port: ${TARGET_PORT} #80
       protocol: TCP
       targetPort: ${SERVICE_PORT} #22137
-  selector:
-    app: fe-service
-    deployment: ${TARGET_ROLE}
+
 
 # When deploying a new version, you can label it deployment: green. 
 # It won’t receive any traffic, even when it’s fully up and running, 
