@@ -2,6 +2,11 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+echo "Check Azure CLI login..."
+if ! az group list >/dev/null 2>&1; then
+    echo "Login Azure CLI required" >&2
+    exit 1
+fi
 resource_group='mscdevops-aks-rg'
 location='westeurope'
 aks_name='mscdevops-aks'

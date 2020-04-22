@@ -123,7 +123,12 @@ node {
         }
 
         stage('Setup services'){
-            sh "bash aks/setup/setup_dns.sh"
+            sh """
+                az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                az account set -s $AZURE_SUBSCRIPTION_ID
+                az aks get-credentials --overwrite-existing --resource-group mscdevops-aks-rg --name mscdevops-aks --admin --file kubeconfig
+                bash aks/setup/setup_dns.sh
+            """
         }
 
         stage('Check Env') {
