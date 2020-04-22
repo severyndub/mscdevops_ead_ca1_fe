@@ -8,6 +8,7 @@
     def branch = env.GIT_BRANCH?.trim().split('/').last().toLowerCase() //master
     def overrideVersion = params.BUILD_VERSION_OVERRIDE?.trim()
     boolean override = false
+    def servicePrincipalId = '72555f61-7a9f-4145-8bb7-a163f107bccf'
 
 node {
 
@@ -41,16 +42,16 @@ node {
 
         switch(branch){
             case 'development':
-                env.TARGET_ROLE = 'blue'
+                //env.TARGET_ROLE = 'blue'
                 env.TARGET_PORT = '8080'
             break
             case 'master':
-                env.TARGET_ROLE = 'green'
+                //env.TARGET_ROLE = 'green'
                 env.TARGET_PORT = '80'
             break
             default:
                 echo "branch is neither development or master, deploying to BLUE type"
-                env.TARGET_ROLE = 'blue'
+                //env.TARGET_ROLE = 'blue'
                 env.TARGET_PORT = "${TARGET_PORT_MAN}"
         }
 
@@ -70,7 +71,7 @@ node {
         """
 
         if(cleanAks) {
-            withCredentials([azureServicePrincipal('72555f61-7a9f-4145-8bb7-a163f107bccf')]) {
+            withCredentials([azureServicePrincipal(servicePrincipalId)]) {
                 // Login to azure
                 sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                 // Set subscription context
@@ -120,6 +121,40 @@ node {
    
         }
 
+        stage('Check Env') {
+        // check the current active environment to determine the inactive one that will be deployed to
+
+            withCredentials([azureServicePrincipal(servicePrincipalId)]) {
+                // fetch the current service configuration
+                sh """
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                    az account set -s $AZURE_SUBSCRIPTION_ID
+                    az aks get-credentials --overwrite-existing --resource-group mscdevops-aks-rg --name mscdevops-aks --admin --file kubeconfig
+                    az logout
+                    current_role="\$(kubectl --kubeconfig kubeconfig get services todoapp-service --output json | jq -r .spec.selector.role)"
+                    if [ "\$current_role" = null ]; then
+                      echo "Unable to determine current environment"
+                      exit 1
+                    fi
+                    echo "\$current_role" >current-environment
+                """
+            }
+
+            // parse the current active backend
+            currentEnvironment = readFile('current-environment').trim()
+
+            // set the build name
+            echo "***************************  CURRENT: $currentEnvironment     NEW: ${newEnvironment()}  *****************************"
+            currentBuild.displayName = newEnvironment().toUpperCase() + ' ' + imageName
+
+            env.TARGET_ROLE = newEnvironment()
+
+            // clean the inactive environment
+            sh """
+                kubectl --kubeconfig=kubeconfig delete deployment "fe-service-\$TARGET_ROLE"
+            """
+        }
+
         stage("Queue deploy") {
                 
             echo "Queueing Deploy job (${targetEnv}, ${env.BUILD_LABEL})."
@@ -144,6 +179,47 @@ node {
             containerRegistryCredentials: [
                 [credentialsId: 'dockerRegAccess', url: 'mcsdevopsentarch.azurecr.io'] ])
         }
+
+        def verifyEnvironment = { service ->
+            sh """
+              endpoint_ip="\$(kubectl --kubeconfig=kubeconfig get services '${service}' --output json | jq -r '.status.loadBalancer.ingress[0].ip')"
+              count=0
+              while true; do
+                  count=\$(expr \$count + 1)
+                  if curl -m 10 "http://\$endpoint_ip"; then
+                      break;
+                  fi
+                  if [ "\$count" -gt 30 ]; then
+                      echo 'Timeout while waiting for the ${service} endpoint to be ready'
+                      exit 1
+                  fi
+                  echo "${service} endpoint is not ready, wait 10 seconds..."
+                  sleep 10
+              done
+            """
+        }
+
+        stage('Verify Staged') {
+            // verify the deployment through the corresponding test endpoint
+            verifyEnvironment("svc-fe-service-${newEnvironment()}")
+        }
+    
+        stage('Switch') {
+            // Update the production service endpoint to route to the new environment.
+            // With enableConfigSubstitution set to true, the variables ${TARGET_ROLE}
+            // will be replaced with environment variable values
+            acsDeploy azureCredentialsId: servicePrincipalId,
+                      resourceGroupName: resourceGroup,
+                      containerService: "mscdevops-aks | AKS",
+                      configFilePaths: '**/frontend/service.yml',
+                      enableConfigSubstitution: true
+        }
+    
+        stage('Verify Prod') {
+            // verify the production environment is working properly
+            verifyEnvironment('svc-fe-service')
+        }
+
 
         stage("Get container public ip"){
             //sh "kubectl describe services svc-fe-service-${env.TARGET_ROLE} | grep 'LoadBalancer Ingress:' | awk '{printf \"%s\\n\", \$3}'"
