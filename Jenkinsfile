@@ -18,7 +18,6 @@ node {
 
     properties([disableConcurrentBuilds()])
 
-
     try {
 
         env.BUILD_VERSION = "1.0.0.${env.BUILD_ID}"
