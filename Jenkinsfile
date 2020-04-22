@@ -171,7 +171,7 @@ node {
 
             // set the build name
             echo "***************************  CURRENT: $currentEnvironment     NEW: ${newEnvironment()}  *****************************"
-            currentBuild.displayName = newEnvironment().toUpperCase() + ' ' + "${env.BUILD_LABEL}"
+            currentBuild.displayName = newEnvironment().toUpperCase() + ' ' + "${env.BUILD_LABEL}:${env.BUILD_VERSION}"
 
             env.TARGET_ROLE = newEnvironment()
 
