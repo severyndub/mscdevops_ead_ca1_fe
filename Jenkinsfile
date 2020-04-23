@@ -12,7 +12,7 @@
     def currentEnvironment = env.TARGET_ROLE?.trim().toLowerCase()
     
     // boolean asBoolean(){
-    //     name == 'green' ? true : false
+    //     name == 'blue' ? true : false
     // }
     
     def newEnvironment = { ->
@@ -36,7 +36,7 @@ node {
         env.TARGET_ROLE = currentEnvironment
         setupDns = params.SETUP_DNS
 
-return 0
+        error("build type: ${deploymentType}")
 
         // Check if the build label is set
         if (buildImages) {
