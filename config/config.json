@@ -1,7 +1,7 @@
 {
 	"development": {
         "config_id": "development",
-        "app_name": "BP Category Calculator blue?",
+        "app_name": "BP Category Calculator",
         "database": "mongodb+srv://dbUser:dbUserPassword@bpcalculator-tftko.azure.mongodb.net/test?retryWrites=true",
 		"database_name": "mydb",
 		"database_collection": "customers",
