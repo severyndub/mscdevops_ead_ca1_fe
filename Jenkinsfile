@@ -41,18 +41,6 @@ node {
             override = true
         }
 
-        switch(branch){
-            case 'development':
-                env.TARGET_PORT = '8080'
-            break
-            case 'master':
-                env.TARGET_PORT = '80'
-            break
-            default:
-                echo "branch is neither development or master, deploying to BLUE type"
-                env.TARGET_PORT = "${TARGET_PORT_MAN}"
-        }
-
         echo """Parameters:
             branch: '${branch}' 
             BUILD LABEL: '$env.BUILD_LABEL'
@@ -67,7 +55,6 @@ node {
             TARGET PORT: '${env.TARGET_PORT}'
             setupDns: '${setupDns}'
         """
-
 
         if(cleanAks) {
             withCredentials([azureServicePrincipal(servicePrincipalId)]) {
