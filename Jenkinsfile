@@ -21,7 +21,7 @@ node {
     try {
 
         env.BUILD_VERSION = "1.0.0.${env.BUILD_ID}"
-        env.BUILD_LABEL = params.BUILD_LABEL?.trim()
+        env.BUILD_LABEL = bp-service
         buildImages = params.BUILD_IMAGES
         targetEnv = params.TARGET_ENV?.trim()
         clearImages = params.CLEAR_IMAGES
@@ -68,8 +68,8 @@ node {
                 // Navigate to fe-service deployment directory
                 dir('aks/frontend'){
                     // Delete deployments
-                    sh "kubectl get deployments -n default --no-headers=true | awk '/fe-service-/{print \$1}' | xargs kubectl delete -n default deployment"
-                    sh "kubectl get services -n default --no-headers=true | awk '/fe-service-/{print \$1}' | xargs kubectl delete -n default service"
+                    sh "kubectl get deployments -n default --no-headers=true | awk '/fe-service/{print \$1}' | xargs kubectl delete -n default deployment"
+                    sh "kubectl get services -n default --no-headers=true | awk '/fe-service/{print \$1}' | xargs kubectl delete -n default service"
                 }
             }
             // If setup dns is not set to true exit right after cleaning the cluster

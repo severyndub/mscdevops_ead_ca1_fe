@@ -52,8 +52,8 @@ function assign_dns {
 }
 
 assign_dns svc-fe-service "aks-fe-service-$dns_name_suffix"
-assign_dns svc-test-fe-service-blue "aks-fe-service-blue-$dns_name_suffix"
-assign_dns svc-test-fe-service-green "aks-fe-service-green-$dns_name_suffix"
+assign_dns svc-fe-service-blue "aks-fe-service-blue-$dns_name_suffix"
+assign_dns svc-fe-service-green "aks-fe-service-green-$dns_name_suffix"
 
 rm -f "$kubeconfig"
 
