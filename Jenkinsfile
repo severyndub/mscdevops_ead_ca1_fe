@@ -9,7 +9,7 @@
     def overrideVersion = params.BUILD_VERSION_OVERRIDE?.trim()
     boolean override = false
     def servicePrincipalId = '72555f61-7a9f-4145-8bb7-a163f107bccf'
-    def currentEnvironment = 'blue'
+    def currentEnvironment = env.TARGET_ROLE?.trim().toLowerCase()
     def newEnvironment = { ->
         currentEnvironment == 'blue' ? 'green' : 'blue'
     }
@@ -45,16 +45,13 @@ node {
 
         switch(branch){
             case 'development':
-                //env.TARGET_ROLE = 'blue'
                 env.TARGET_PORT = '8080'
             break
             case 'master':
-                //env.TARGET_ROLE = 'green'
                 env.TARGET_PORT = '80'
             break
             default:
                 echo "branch is neither development or master, deploying to BLUE type"
-                //env.TARGET_ROLE = 'blue'
                 env.TARGET_PORT = "${TARGET_PORT_MAN}"
         }
 
@@ -73,6 +70,8 @@ node {
             TARGET PORT: '${env.TARGET_PORT}'
             setupDns: '${setupDns}'
         """
+
+return 0
 
         if(cleanAks) {
             withCredentials([azureServicePrincipal(servicePrincipalId)]) {
