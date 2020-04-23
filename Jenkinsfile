@@ -34,8 +34,9 @@ node {
             if (!env.BUILD_LABEL) {
                 error("Build label must be specified!: build label: ${env.BUILD_LABEL}")
             }
+        }
         // Check if this is an overide play
-        } else if (overrideVersion != "1.0.0.0") {    
+        if (overrideVersion != "1.0.0.0") {    
             env.BUILD_VERSION = overrideVersion
             buildImages = false
             override = true
