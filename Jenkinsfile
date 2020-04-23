@@ -49,7 +49,7 @@ node {
                 env.TARGET_PORT = '8080'
             break
             case 'master':
-                env.TARGET_ROLE = 'green'
+                //env.TARGET_ROLE = 'green'
                 env.TARGET_PORT = '80'
             break
             default:
