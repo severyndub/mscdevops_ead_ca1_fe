@@ -66,7 +66,7 @@ node {
             targetEnv: '${targetEnv}'
             clearImages: '${clearImages}'
             TARGET ROLE (deployment type) '${currentEnvironment}'
-            new env: '${newEnvironment}'
+            new env: '${newEnvironment()}'
             cleanAks: '${cleanAks}'
             REPLICAS NO: '$env.REPLICAS_NO'
             TARGET_ROLE: '$env.TARGET_ROLE'
