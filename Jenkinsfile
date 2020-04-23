@@ -72,8 +72,7 @@ node {
                     sh "kubectl get services -n default --no-headers=true | awk '/fe-service/{print \$1}' | xargs kubectl delete -n default service"
                 }
             }
-            // If setup dns is not set to true exit right after cleaning the cluster
-            
+            // If setup dns is not set to true exit right after cleaning the cluster   
             if (!setupDns){
                 echo "EXIT NOW!"
                 return 0
@@ -194,7 +193,7 @@ node {
 
         stage('Verify Staged') {
             // verify the deployment through the corresponding test endpoint
-            verifyEnvironment("svc-test-fe-service-${newEnvironment()}")
+            verifyEnvironment("svc-fe-service-${newEnvironment()}")
         }
     
         stage('Switch') {
