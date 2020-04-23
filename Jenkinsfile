@@ -36,8 +36,6 @@ node {
         env.TARGET_ROLE = currentEnvironment
         setupDns = params.SETUP_DNS
 
-        error("build type: ${deploymentType}")
-
         // Check if the build label is set
         if (buildImages) {
             if (!env.BUILD_LABEL) {
@@ -77,6 +75,8 @@ node {
             TARGET PORT: '${env.TARGET_PORT}'
             setupDns: '${setupDns}'
         """
+
+        error("build type: ${deploymentType}")
 
         if(cleanAks) {
             withCredentials([azureServicePrincipal(servicePrincipalId)]) {
