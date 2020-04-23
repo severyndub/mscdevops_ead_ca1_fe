@@ -10,6 +10,11 @@
     boolean override = false
     def servicePrincipalId = '72555f61-7a9f-4145-8bb7-a163f107bccf'
     def currentEnvironment = env.TARGET_ROLE?.trim().toLowerCase()
+    
+    // boolean asBoolean(){
+    //     name == 'green' ? true : false
+    // }
+    
     def newEnvironment = { ->
         currentEnvironment == 'blue' ? 'green' : 'blue'
     }
@@ -30,6 +35,8 @@ node {
         cleanAks = params.CLEAN_AKS
         env.TARGET_ROLE = currentEnvironment
         setupDns = params.SETUP_DNS
+
+return 0
 
         // Check if the build label is set
         if (buildImages) {
