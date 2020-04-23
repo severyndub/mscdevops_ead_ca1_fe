@@ -21,7 +21,7 @@ node {
     try {
 
         env.BUILD_VERSION = "1.0.0.${env.BUILD_ID}"
-        env.BUILD_LABEL = bp-service
+        env.BUILD_LABEL = 'bp-service'
         buildImages = params.BUILD_IMAGES
         targetEnv = params.TARGET_ENV?.trim()
         clearImages = params.CLEAR_IMAGES
