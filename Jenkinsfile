@@ -154,7 +154,6 @@ node {
                       exit 1
                     fi
                     echo "\$current_role" >current-environment
-                    az logout
                 """
             }
 
