@@ -71,8 +71,6 @@ node {
             setupDns: '${setupDns}'
         """
 
-return 0
-
         if(cleanAks) {
             withCredentials([azureServicePrincipal(servicePrincipalId)]) {
                 // Login to azure
