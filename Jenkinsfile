@@ -15,11 +15,7 @@
     // }
     
     def newEnvironment = { ->
-        if(currentEnvironment == 'auto'){
-            currentEnvironment == 'blue' ? 'green' : 'blue'
-        }else{
-            currentEnvironment == 'green' ? 'green' : 'blue'
-        }
+        currentEnvironment == 'blue' ? 'green' : 'blue'
     }
     boolean setupDns = false
 
@@ -69,8 +65,6 @@ node {
             buildImages: '${buildImages}'
             targetEnv: '${targetEnv}'
             clearImages: '${clearImages}'
-            TARGET ROLE (deployment type) '${currentEnvironment}'
-            new env: '${newEnvironment()}'
             cleanAks: '${cleanAks}'
             REPLICAS NO: '$env.REPLICAS_NO'
             TARGET_ROLE: '$env.TARGET_ROLE'
@@ -78,37 +72,6 @@ node {
             TARGET PORT: '${env.TARGET_PORT}'
             setupDns: '${setupDns}'
         """
-
-
-        stage('Check Env') {
-        // check the current active environment to determine the inactive one that will be deployed to
-
-            withCredentials([azureServicePrincipal(servicePrincipalId)]) {
-                // fetch the current service configuration
-                sh """
-                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-                    az account set -s $AZURE_SUBSCRIPTION_ID
-                    az aks get-credentials --overwrite-existing --resource-group mscdevops-aks-rg --name mscdevops-aks --admin --file kubeconfig
-                    current_role="\$(kubectl --kubeconfig kubeconfig get services svc-fe-service --output json | jq -r .spec.selector.deployment)"
-                    if [ "\$current_role" = null ]; then
-                      echo "Unable to determine current environment"
-                      exit 1
-                    fi
-                    echo "\$current_role" >current-environment
-                """
-            }
-
-            // parse the current active backend
-            currentEnvironment = readFile('current-environment').trim()
-
-            // set the build name
-            echo "***************************  CURRENT: $currentEnvironment     NEW: ${newEnvironment()}  *****************************"
-            currentBuild.displayName = newEnvironment().toUpperCase() + ' ' + "${env.BUILD_LABEL}:${env.BUILD_VERSION}"
-
-            env.TARGET_ROLE = newEnvironment()
-        }
-
-        echo "TARGET ROLE (deployment type) '${env.TARGET_ROLE}'"
 
         error("build type: ${currentEnvironment}")
 
