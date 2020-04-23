@@ -67,12 +67,15 @@ node {
 
                 // Navigate to fe-service deployment directory
                 dir('aks/frontend'){
-                // Deploy the service
-                sh "kubectl delete deployment fe-service-${env.TARGET_ROLE}"
-                sh "kubectl delete services svc-fe-service-${env.TARGET_ROLE}"
+                    // Delete deployments
+                    sh "kubectl get deployments -n default --no-headers=true | awk '/fe-service-/{print $1}' | xargs kubectl delete -n default deployment"
+                    sh "kubectl get services -n default --no-headers=true | awk '/fe-service-/{print $1}' | xargs kubectl delete -n default service"
+                }
+                // If setup dns is not set to true exit right after cleaning the cluster
+                if (!setupDns){
+                    return 0
                 }
             }
-            return 0
         }
         
         stage("Pull Source") {
