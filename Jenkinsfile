@@ -2,7 +2,6 @@
 
     boolean buildImages = false
     def targetEnv = ""
-    def deploymentType = ""
     boolean clearImages = true
     boolean cleanAks = false
     def branch = env.GIT_BRANCH?.trim().split('/').last().toLowerCase() //master
@@ -30,7 +29,6 @@ node {
         env.BUILD_LABEL = params.BUILD_LABEL?.trim()
         buildImages = params.BUILD_IMAGES
         targetEnv = params.TARGET_ENV?.trim()
-        deploymentType = params.TARGET_ROLE?.trim()
         clearImages = params.CLEAR_IMAGES
         cleanAks = params.CLEAN_AKS
         env.TARGET_ROLE = currentEnvironment
@@ -67,7 +65,7 @@ node {
             buildImages: '${buildImages}'
             targetEnv: '${targetEnv}'
             clearImages: '${clearImages}'
-            deploymentType: '${deploymentType}'
+            TARGET ROLE (deployment type) '${currentEnvironment}'
             cleanAks: '${cleanAks}'
             REPLICAS NO: '$env.REPLICAS_NO'
             TARGET_ROLE: '$env.TARGET_ROLE'
@@ -76,7 +74,7 @@ node {
             setupDns: '${setupDns}'
         """
 
-        error("build type: ${deploymentType}")
+        error("build type: ${currentEnvironment}")
 
         if(cleanAks) {
             withCredentials([azureServicePrincipal(servicePrincipalId)]) {
