@@ -15,7 +15,11 @@
     // }
     
     def newEnvironment = { ->
-        currentEnvironment == 'blue' ? 'green' : 'blue'
+        if(currentEnvironment == 'auto'){
+            currentEnvironment == 'blue' ? 'green' : 'blue'
+        }else{
+            currentEnvironment == 'green' ? 'green' : 'blue'
+        }
     }
     boolean setupDns = false
 
